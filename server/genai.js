@@ -1,7 +1,9 @@
-// server/genai.js
 import express from "express";
 import cors from "cors";
 import { PredictionServiceClient } from "@google-cloud/aiplatform";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -9,9 +11,9 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
-// Initialize Google GenAI client
+// Use .env to point to the key file
 const client = new PredictionServiceClient({
-  keyFilename: "./service-account.json",
+  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
 });
 
 app.post("/api/genai", async (req, res) => {
