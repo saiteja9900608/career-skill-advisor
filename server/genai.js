@@ -1,41 +1,36 @@
 // server/genai.js
 import express from "express";
-import fetch from "node-fetch";
 import cors from "cors";
-import dotenv from "dotenv";
-
-dotenv.config();
+import { PredictionServiceClient } from "@google-cloud/aiplatform";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
-const API_KEY = process.env.GENAI_API_KEY; // Your OpenAI key in .env
+
+// Initialize Google GenAI client
+const client = new PredictionServiceClient({
+  keyFilename: "./service-account.json",
+});
 
 app.post("/api/genai", async (req, res) => {
   const { message } = req.body;
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4", // or gpt-3.5-turbo
-        messages: [{ role: "user", content: message }],
-        max_tokens: 200,
-      }),
-    });
+    const request = {
+      endpoint: `projects/teak-bebop-472711-e5/locations/us-central1/publishers/google/models/text-bison@001`,
+      instances: [{ content: message }],
+    };
 
-    const data = await response.json();
-    res.json({ reply: data.choices[0].message.content });
+    const [response] = await client.predict(request);
+    const reply = response.predictions[0].content;
+
+    res.json({ reply });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ reply: "Error calling AI API." });
+    res.status(500).json({ reply: "Error calling Google GenAI API." });
   }
 });
 
-app.listen(PORT, () => console.log(`GenAI backend running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Google GenAI backend running on port ${PORT}`));
