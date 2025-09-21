@@ -1,10 +1,30 @@
+import { Link } from "react-router-dom";
+
 export default function Home() {
   return (
-    <div className="max-w-3xl mx-auto text-center mt-10">
-      <h2 className="text-3xl font-bold mb-4">Welcome to Career & Skill Advisor</h2>
-      <p className="text-gray-600">
-        A GenAI-powered platform to guide your career journey — from skills assessment to resume building and interview preparation.
+    <div className="p-6 text-center">
+      <h1 className="text-4xl font-bold mb-4 text-blue-700">
+        Personal Career & Skill Advisor
+      </h1>
+      <p className="text-lg text-gray-600 mb-8">
+        An AI-powered prototype to guide your career choices, assess your skills,
+        and give personalized advice.
       </p>
+
+      <div className="space-x-4">
+        <Link
+          to="/assessment"
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+        >
+          Start Assessment
+        </Link>
+        <Link
+          to="/assistant"
+          className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700"
+        >
+          Ask AI Assistant
+        </Link>
+      </div>
     </div>
   );
 }
