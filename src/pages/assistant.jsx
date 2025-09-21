@@ -1,59 +1,62 @@
-// src/pages/Assistant.jsx
 import { useState } from "react";
 
 export default function Assistant() {
+  const [messages, setMessages] = useState([
+    { role: "assistant", text: "Hi! I'm your Career & Skill Advisor. How can I help you today?" }
+  ]);
   const [input, setInput] = useState("");
-  const [chat, setChat] = useState([]);
 
-  const handleSend = async () => {
+  const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const userMsg = { role: "user", content: input };
-    setChat([...chat, userMsg]);
+    // Add user message
+    const userMsg = { role: "user", text: input };
+    setMessages([...messages, userMsg]);
+
+    // Simulated AI response (mock)
+    const mockReplies = [
+      "Based on your skills, Data Science could be a great path.",
+      "You should focus on improving your problem-solving and coding skills.",
+      "I recommend practicing mock interviews regularly.",
+      "Upskilling in Cloud and DevOps can increase your career opportunities."
+    ];
+    const randomReply = mockReplies[Math.floor(Math.random() * mockReplies.length)];
+
+    setTimeout(() => {
+      setMessages((prev) => [...prev, { role: "assistant", text: randomReply }]);
+    }, 1000);
+
     setInput("");
-
-    try {
-      const res = await fetch("http://localhost:5000/api/genai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
-      });
-
-      const data = await res.json();
-      setChat((prev) => [...prev, { role: "assistant", content: data.reply }]);
-    } catch (err) {
-      setChat((prev) => [...prev, { role: "assistant", content: "Error fetching response." }]);
-    }
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10">
-      <h2 className="text-2xl font-bold mb-4 text-center">GenAI Career Assistant</h2>
-      <div className="space-y-2 mb-4 max-h-80 overflow-y-auto border p-4 rounded-lg bg-gray-50">
-        {chat.map((msg, i) => (
-          <p
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">AI Career Assistant (Demo)</h1>
+      <div className="border rounded-lg p-4 h-80 overflow-y-auto bg-gray-50">
+        {messages.map((msg, i) => (
+          <div
             key={i}
-            className={
-              msg.role === "user"
-                ? "text-right text-blue-700 font-medium"
-                : "text-left text-gray-800 font-medium"
-            }
+            className={`mb-2 ${
+              msg.role === "user" ? "text-right text-blue-600" : "text-left text-green-700"
+            }`}
           >
-            <span className="font-bold">{msg.role === "user" ? "You" : "AI"}:</span> {msg.content}
-          </p>
+            <span className="px-3 py-2 rounded-lg inline-block bg-white shadow">
+              {msg.text}
+            </span>
+          </div>
         ))}
       </div>
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex mt-4">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-1 border p-2 rounded-lg"
-          placeholder="Ask me anything about your career..."
+          placeholder="Ask me anything..."
+          className="flex-1 border rounded-lg p-2"
         />
         <button
-          onClick={handleSend}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          onClick={sendMessage}
+          className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
         >
           Send
         </button>
